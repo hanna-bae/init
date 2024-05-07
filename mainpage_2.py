@@ -1,17 +1,22 @@
 import streamlit as st 
-import openai 
+from openai import OpenAI
 import os 
 
 # OpenAI API key 
-openai.api_key = os.getenv('OPENAI_API_KEY')
-
+client = OpenAI(
+    api_key = os.environ.get('OPENAI_API_KEY')
+)
 def generate_samhengsi(keyword):
     try: 
         # 삼행시 생성 
-        response = openai.Completion.create(
-                  model = 'text-davinci-003',
-                  prompt =f'{keyword}에 대한 삼행시를 만들어주세요.',
-                  max_tokens = 60
+        response = client.chat.completions.create(
+                  messages = [
+                      {
+                          'role': 'user',
+                          'content': f"{keyword}로 삼행시를 생성해주세요",
+                      }
+                  ],
+                  model='gpt-3.5-turbo',
         )
         return response.choices[0].text.strip()
     except Exception as e:
